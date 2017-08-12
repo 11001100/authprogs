@@ -1,0 +1,23 @@
+[0.9.104]
+	- check for invalid characters only in the part of the command that is match by '*'
+
+[0.9.103]
+	- display a message to the client also when access is denied
+
+[0.9.102]
+	- if an error is encountered always display a message to the client
+
+[0.9.101]
+	- when executing command using the shell, if command can not be found then the return code
+must be retrieved using WEXITSTATUS
+
+[0.9.100]
+	- added more detailed error message if invalid characters are used
+
+[0.9.99]
+	- code rewrite
+	- added support for routing prefixes in configuration file (a.b.c.d/24)
+	- improved logging
+	- added support for windows
+	- added unit test framework
+	- added system test framework

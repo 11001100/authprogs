@@ -1,0 +1,10 @@
+This program is a "C" implementation of http://www.hackinglinuxexposed.com/articles/20030115.html
+
+In order to use it, 'command=' option must be added in '~/.ssh/authorized_keys' file.
+
+Ex. :
+root@server:~$ cat ~/.ssh/authorized_keys
+command="/usr/bin/authprogs",no-port-forwarding ssh-rsa AAAA...KfM6= user@domain.com
+
+Because the command is executed using the shell, authprogs will not work if 'no-pty'
+option is added to authorized_keys file.

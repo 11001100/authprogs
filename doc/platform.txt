@@ -1,0 +1,7 @@
+Tested on:
+- Linux
+- FreeBSD
+- Mac OS X
+- Windows
+
+Should work on other operating systems/versions.

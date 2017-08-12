@@ -1,0 +1,33 @@
+Using CMake
+===========
+
+***** On Windows with Visual Studio *****
+
+cd authprogs
+mkdir build
+cd build
+cmake ..
+
+Visual Studio solution will be generated in build directory.
+
+***** On Unices *****
+
+cd authprogs
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make
+
+The binaries will be generated in build/bin directory.
+
+
+
+Using Makefile
+==============
+
+***** On Unices *****
+
+cd authprogs
+make
+
+The binary will be generated in src directory.
