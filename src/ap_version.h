@@ -4,7 +4,7 @@
 
 #define AP_VERSION_MAJOR			0
 #define AP_VERSION_MINOR			9
-#define AP_VERSION_REVISION			104
+#define AP_VERSION_REVISION			105
 #define AP_VERSION_BUILD			0
 
 

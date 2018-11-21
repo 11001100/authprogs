@@ -642,6 +642,8 @@ static int init_client_command (AP_CTX *ctx)
 		goto finish;
 	}
 
+	ap_str_trim_head_from_set (ctx->client_command, " \t");
+	ap_str_trim_tail_from_set (ctx->client_command, " \t\r\n");
 	ap_str_shrink_spaces (ctx->client_command);
 
 finish:

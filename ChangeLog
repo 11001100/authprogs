@@ -1,3 +1,6 @@
+[0.9.105]
+	- trim and shrink spaces also from ssh command
+
 [0.9.104]
 	- check for invalid characters only in the part of the command that is match by '*'
 
