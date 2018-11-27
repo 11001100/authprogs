@@ -183,7 +183,7 @@ set_tests_properties	(${NAME}_command_denied_-c_authprogs.conf_-l_stdout_prefix_
 set_property			(TEST ${NAME}_command_denied_-c_authprogs.conf_-l_stdout_prefix_24		PROPERTY ENVIRONMENT "SSH_CLIENT=192.168.100.100 64477 22" "SSH_ORIGINAL_COMMAND=echo NOT WORKING!!!") 
 
 add_test				(NAME ${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_match_1	COMMAND ${PROJECT_NAME} -c ${CMAKE_CURRENT_BINARY_DIR}/data/authprogs.conf -l stdout)
-set_tests_properties	(${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_match_1		PROPERTIES PASS_REGULAR_EXPRESSION "Invalid characters '.*' in command '.*', not allowed in the substring matched by '*'")
+set_tests_properties	(${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_match_1		PROPERTIES PASS_REGULAR_EXPRESSION "Is not allowed to execute command")
 set_property			(TEST ${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_match_1	PROPERTY ENVIRONMENT "SSH_CLIENT=192.168.100.100 64477 22" "SSH_ORIGINAL_COMMAND=/usr/bin/mbuffer -q -s 128k -W 60 -m 1G|sudo zfs recv -F rpool/backup|") 
 
 add_test				(NAME ${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_match_2	COMMAND ${PROJECT_NAME} -c ${CMAKE_CURRENT_BINARY_DIR}/data/authprogs.conf -l stdout)
@@ -191,5 +191,5 @@ set_tests_properties	(${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_ma
 set_property			(TEST ${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_match_2	PROPERTY ENVIRONMENT "SSH_CLIENT=192.168.100.100 64477 22" "SSH_ORIGINAL_COMMAND=/usr/bin/mbuffer -q -s 128k -W 60 -m 1G|sudo zfs recv -F|")
 
 add_test				(NAME ${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_match_3	COMMAND ${PROJECT_NAME} -c ${CMAKE_CURRENT_BINARY_DIR}/data/authprogs.conf -l stdout)
-set_tests_properties	(${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_match_3		PROPERTIES PASS_REGULAR_EXPRESSION "Invalid characters '.*' in command '.*', not allowed in the substring matched by '*'")
+set_tests_properties	(${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_match_3		PROPERTIES PASS_REGULAR_EXPRESSION "Is not allowed to execute command")
 set_property			(TEST ${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_match_3	PROPERTY ENVIRONMENT "SSH_CLIENT=192.168.100.100 64477 22" "SSH_ORIGINAL_COMMAND=/usr/bin/mbuffer -q -s 128k -W 60 -m 1G|sudo zfs recv -F |") 

@@ -942,9 +942,8 @@ static int parse_command (AP_CTX *ctx, char *line, BOOL *command_match)
 		{
 			case AP_ERROR_STR_INVALID_CHARS:
 			{
-				// if invalid chars are found in the client command, then we stop checking other lines in the config file
-				ap_error ("(%s) Invalid characters '%s' in command '%s', not allowed in the substring matched by '*'\n", ctx->client_ip, invalid_chars, ctx->client_command);
-				rc = AP_ERROR_NOT_VALID;
+				ap_debug ("(%s) Invalid characters '%s' in command '%s', not allowed in the substring matched by '*'\n", ctx->client_ip, invalid_chars, ctx->client_command);
+				rc = AP_NO_ERROR;
 
 				goto finish;
 

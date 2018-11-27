@@ -319,10 +319,8 @@ int ap_str_match (char *str, const char *pattern, const char *invalid_chars)
 #	define		EOS			'\0'
 
 	int			rc			= AP_NO_ERROR;
-	const char	*start		= NULL;
 	char		c;
 	char		test;
-	char		*pos		= NULL;
 
 	if (str == NULL || pattern == NULL)
 	{
@@ -331,7 +329,7 @@ int ap_str_match (char *str, const char *pattern, const char *invalid_chars)
 		goto finish;
 	}
 
-	for (start = str ; ; )
+	for ( ; ; )
 	{
 		switch (c = *pattern++)
 		{
