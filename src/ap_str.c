@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "ap.h"
+#include "ap_defs.h"
 #include "ap_str.h"
 
 
@@ -297,3 +298,152 @@ size_t ap_str_strlcat (char *dst, const char *src, size_t size)
 }
 
 
+static BOOL check_if_invalid_char (char c, const char *invalid_chars)
+{
+	const char *pos = NULL;
+
+	for (pos = invalid_chars; *pos != '\0'; pos++)
+	{
+		if (c == *pos)
+		{
+			return TRUE;
+		}
+	}
+
+	return FALSE;
+}
+
+
+int ap_str_match (char *str, const char *pattern, const char *invalid_chars)
+{
+#	define		EOS			'\0'
+
+	int			rc			= AP_NO_ERROR;
+	const char	*start		= NULL;
+	char		c;
+	char		test;
+	char		*pos		= NULL;
+
+	if (str == NULL || pattern == NULL)
+	{
+		rc = AP_ERROR_INVALID_ARGUMENT;
+
+		goto finish;
+	}
+
+	for (start = str ; ; )
+	{
+		switch (c = *pattern++)
+		{
+			case EOS:
+			{
+				if (*str == EOS)
+				{
+					rc = AP_NO_ERROR;
+				}
+				else
+				{
+					rc = AP_ERROR_STR_NO_MATCH;
+				}
+
+				goto finish;
+
+				break;
+			}
+
+			case '?':
+			{
+				if (*str == EOS)
+				{
+					rc = AP_ERROR_STR_NO_MATCH;
+
+					goto finish;
+				}
+
+				if (check_if_invalid_char (*str, invalid_chars) == TRUE)
+				{
+					rc = AP_ERROR_STR_INVALID_CHARS;
+
+					goto finish;
+				}
+				
+				str++;
+
+				break;
+			}
+
+			case '*':
+			{
+				c = *pattern;
+
+				// Multiple *
+				while (c == '*')
+				{
+					pattern++;
+					c = *pattern;
+				}
+
+				if (c == EOS)
+				{
+					if (ap_str_find_first_char_from_set (str, invalid_chars) != NULL)
+					{
+						rc = AP_ERROR_STR_INVALID_CHARS;
+
+						goto finish;
+					}
+
+					rc = AP_NO_ERROR;
+
+					goto finish;
+				}
+
+				while ((test = *str) != EOS)
+				{
+					if (check_if_invalid_char (*str, invalid_chars) == TRUE)
+					{
+						rc = AP_ERROR_STR_INVALID_CHARS;
+
+						goto finish;
+					}
+
+					rc = ap_str_match (str, pattern, invalid_chars);
+					if (rc == AP_NO_ERROR)
+					{
+						goto finish;
+					}
+
+					str++;
+				}
+
+				rc = AP_ERROR_STR_NO_MATCH;
+
+				goto finish;
+
+				break;
+			}
+
+			default:
+			{
+				if (c == *str)
+				{
+				}
+				else
+				{
+					rc = AP_ERROR_STR_NO_MATCH;
+
+					goto finish;
+				}
+
+				str++;
+
+				break;
+			}
+		}
+	}
+
+	// should not reach
+	rc = AP_ERROR_STR_NO_MATCH;
+
+finish:
+	return rc;
+}

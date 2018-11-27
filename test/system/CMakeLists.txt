@@ -144,33 +144,37 @@ set_tests_properties	(${NAME}_-e_6									PROPERTIES PASS_REGULAR_EXPRESSION "I
 
 
 # ip allowed
-add_test				(NAME ${NAME}_allowed_-c_authprogs.conf_-l_stdout_ALL			COMMAND ${PROJECT_NAME} -c ${CMAKE_CURRENT_BINARY_DIR}/data/authprogs.conf -l stdout)
+add_test				(NAME ${NAME}_allowed_-c_authprogs.conf_-l_stdout_ALL			COMMAND ${PROJECT_NAME} -c ${CMAKE_CURRENT_BINARY_DIR}/data/authprogs.conf -l stdout -s)
 set_tests_properties	(${NAME}_allowed_-c_authprogs.conf_-l_stdout_ALL				PROPERTIES PASS_REGULAR_EXPRESSION "Successfully executed command")
 set_property			(TEST ${NAME}_allowed_-c_authprogs.conf_-l_stdout_ALL			PROPERTY ENVIRONMENT "SSH_CLIENT=192.168.100.100 64477 22" "SSH_ORIGINAL_COMMAND=cvs up") 
 
-add_test				(NAME ${NAME}_allowed_-c_authprogs.conf_-l_stdout_prefix_24		COMMAND ${PROJECT_NAME} -c ${CMAKE_CURRENT_BINARY_DIR}/data/authprogs.conf -l stdout)
+add_test				(NAME ${NAME}_allowed_-c_authprogs.conf_-l_stdout_prefix_24		COMMAND ${PROJECT_NAME} -c ${CMAKE_CURRENT_BINARY_DIR}/data/authprogs.conf -l stdout -s)
 set_tests_properties	(${NAME}_allowed_-c_authprogs.conf_-l_stdout_prefix_24			PROPERTIES PASS_REGULAR_EXPRESSION "Successfully executed command")
 set_property			(TEST ${NAME}_allowed_-c_authprogs.conf_-l_stdout_prefix_24		PROPERTY ENVIRONMENT "SSH_CLIENT=192.168.100.100 64477 22" "SSH_ORIGINAL_COMMAND=echo WORKING!!!") 
 
-add_test				(NAME ${NAME}_allowed_-c_authprogs.conf_-l_stdout_prefix_32		COMMAND ${PROJECT_NAME} -c ${CMAKE_CURRENT_BINARY_DIR}/data/authprogs.conf -l stdout)
+add_test				(NAME ${NAME}_allowed_-c_authprogs.conf_-l_stdout_prefix_32		COMMAND ${PROJECT_NAME} -c ${CMAKE_CURRENT_BINARY_DIR}/data/authprogs.conf -l stdout -s)
 set_tests_properties	(${NAME}_allowed_-c_authprogs.conf_-l_stdout_prefix_32			PROPERTIES PASS_REGULAR_EXPRESSION "Successfully executed command")
 set_property			(TEST ${NAME}_allowed_-c_authprogs.conf_-l_stdout_prefix_32		PROPERTY ENVIRONMENT "SSH_CLIENT=10.2.1.100 64477 22" "SSH_ORIGINAL_COMMAND=ls")
 
 
 # ip denied
-add_test				(NAME ${NAME}_ip_denied_-c_authprogs.conf_-l_stdout				COMMAND ${PROJECT_NAME} -c ${CMAKE_CURRENT_BINARY_DIR}/data/authprogs.conf -l stdout)
+add_test				(NAME ${NAME}_ip_denied_-c_authprogs.conf_-l_stdout				COMMAND ${PROJECT_NAME} -c ${CMAKE_CURRENT_BINARY_DIR}/data/authprogs.conf -l stdout -s)
 set_tests_properties	(${NAME}_ip_denied_-c_authprogs.conf_-l_stdout					PROPERTIES PASS_REGULAR_EXPRESSION "Is not allowed to execute command")
 set_property			(TEST ${NAME}_ip_denied_-c_authprogs.conf_-l_stdout				PROPERTY ENVIRONMENT "SSH_CLIENT=192.168.99.100 64477 22" "SSH_ORIGINAL_COMMAND=free") 
 
 
 # command allowed
-add_test				(NAME ${NAME}_command_allowed_-c_authprogs.conf_-l_stdout_star_match			COMMAND ${PROJECT_NAME} -c ${CMAKE_CURRENT_BINARY_DIR}/data/authprogs.conf -l stdout)
+add_test				(NAME ${NAME}_command_allowed_-c_authprogs.conf_-l_stdout_star_match			COMMAND ${PROJECT_NAME} -c ${CMAKE_CURRENT_BINARY_DIR}/data/authprogs.conf -l stdout -s)
 set_tests_properties	(${NAME}_command_allowed_-c_authprogs.conf_-l_stdout_star_match					PROPERTIES PASS_REGULAR_EXPRESSION "Successfully executed command")
 set_property			(TEST ${NAME}_command_allowed_-c_authprogs.conf_-l_stdout_star_match			PROPERTY ENVIRONMENT "SSH_CLIENT=192.168.100.100 64477 22" "SSH_ORIGINAL_COMMAND=/usr/bin/mbuffer -q -s 128k -W 60 -m 1G|sudo zfs recv -F rpool/backup")
 
-add_test				(NAME ${NAME}_command_allowed_-c_authprogs.conf_-l_stdout_star_match_syncoid	COMMAND ${PROJECT_NAME} -c ${CMAKE_CURRENT_BINARY_DIR}/data/authprogs.conf -l stdout)
-set_tests_properties	(${NAME}_command_allowed_-c_authprogs.conf_-l_stdout_star_match_syncoid			PROPERTIES PASS_REGULAR_EXPRESSION "Successfully executed command")
-set_property			(TEST ${NAME}_command_allowed_-c_authprogs.conf_-l_stdout_star_match_syncoid	PROPERTY ENVIRONMENT "SSH_CLIENT=192.168.100.100 64477 22" "SSH_ORIGINAL_COMMAND= /usr/bin/mbuffer  -q -s 128k -m 16M 2>/dev/null | /usr/bin/sudo /sbin/zfs receive -s -F 'rpool/ROOT/ubuntu''") 
+add_test				(NAME ${NAME}_command_allowed_-c_authprogs.conf_-l_stdout_star_match_syncoid_recv	COMMAND ${PROJECT_NAME} -c ${CMAKE_CURRENT_BINARY_DIR}/data/authprogs.conf -l stdout -s)
+set_tests_properties	(${NAME}_command_allowed_-c_authprogs.conf_-l_stdout_star_match_syncoid_recv		PROPERTIES PASS_REGULAR_EXPRESSION "Successfully executed command")
+set_property			(TEST ${NAME}_command_allowed_-c_authprogs.conf_-l_stdout_star_match_syncoid_recv	PROPERTY ENVIRONMENT "SSH_CLIENT=192.168.100.100 64477 22" "SSH_ORIGINAL_COMMAND= /usr/bin/mbuffer  -q -s 128k -m 16M 2>/dev/null | /usr/bin/sudo /sbin/zfs receive -s -F 'rpool/ROOT/ubuntu''") 
+
+add_test				(NAME ${NAME}_command_allowed_-c_authprogs.conf_-l_stdout_star_match_syncoid_send	COMMAND ${PROJECT_NAME} -c ${CMAKE_CURRENT_BINARY_DIR}/data/authprogs.conf -l stdout -s)
+set_tests_properties	(${NAME}_command_allowed_-c_authprogs.conf_-l_stdout_star_match_syncoid_send		PROPERTIES PASS_REGULAR_EXPRESSION "Successfully executed command")
+set_property			(TEST ${NAME}_command_allowed_-c_authprogs.conf_-l_stdout_star_match_syncoid_send	PROPERTY ENVIRONMENT "SSH_CLIENT=192.168.100.100 64477 22" "SSH_ORIGINAL_COMMAND=/usr/bin/sudo /sbin/zfs send -I 'rpool/ROOT/ubuntu'@'autosnap_2018-11-23_08:00:02_hourly' 'rpool/ROOT/ubuntu'@'autosnap_2018-11-23_09:00:02_hourly' | /usr/bin/mbuffer  -q -s 128k -m 16M 2>/dev/null") 
 
 
 # command denied
@@ -179,7 +183,7 @@ set_tests_properties	(${NAME}_command_denied_-c_authprogs.conf_-l_stdout_prefix_
 set_property			(TEST ${NAME}_command_denied_-c_authprogs.conf_-l_stdout_prefix_24		PROPERTY ENVIRONMENT "SSH_CLIENT=192.168.100.100 64477 22" "SSH_ORIGINAL_COMMAND=echo NOT WORKING!!!") 
 
 add_test				(NAME ${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_match_1	COMMAND ${PROJECT_NAME} -c ${CMAKE_CURRENT_BINARY_DIR}/data/authprogs.conf -l stdout)
-set_tests_properties	(${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_match_1		PROPERTIES PASS_REGULAR_EXPRESSION "Invalid characters in command.*, not allowed when using '\\*' matching")
+set_tests_properties	(${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_match_1		PROPERTIES PASS_REGULAR_EXPRESSION "Invalid characters '.*' in command '.*', not allowed in the substring matched by '*'")
 set_property			(TEST ${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_match_1	PROPERTY ENVIRONMENT "SSH_CLIENT=192.168.100.100 64477 22" "SSH_ORIGINAL_COMMAND=/usr/bin/mbuffer -q -s 128k -W 60 -m 1G|sudo zfs recv -F rpool/backup|") 
 
 add_test				(NAME ${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_match_2	COMMAND ${PROJECT_NAME} -c ${CMAKE_CURRENT_BINARY_DIR}/data/authprogs.conf -l stdout)
@@ -187,5 +191,5 @@ set_tests_properties	(${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_ma
 set_property			(TEST ${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_match_2	PROPERTY ENVIRONMENT "SSH_CLIENT=192.168.100.100 64477 22" "SSH_ORIGINAL_COMMAND=/usr/bin/mbuffer -q -s 128k -W 60 -m 1G|sudo zfs recv -F|")
 
 add_test				(NAME ${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_match_3	COMMAND ${PROJECT_NAME} -c ${CMAKE_CURRENT_BINARY_DIR}/data/authprogs.conf -l stdout)
-set_tests_properties	(${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_match_3		PROPERTIES PASS_REGULAR_EXPRESSION "Invalid characters in command.*, not allowed when using '\\*' matching")
+set_tests_properties	(${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_match_3		PROPERTIES PASS_REGULAR_EXPRESSION "Invalid characters '.*' in command '.*', not allowed in the substring matched by '*'")
 set_property			(TEST ${NAME}_command_denied_-c_authprogs.conf_-l_stdout_star_match_3	PROPERTY ENVIRONMENT "SSH_CLIENT=192.168.100.100 64477 22" "SSH_ORIGINAL_COMMAND=/usr/bin/mbuffer -q -s 128k -W 60 -m 1G|sudo zfs recv -F |") 

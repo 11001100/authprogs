@@ -15,7 +15,11 @@ typedef unsigned char					BOOL;
 
 #define AP_STR_SIZE						1024
 
-#define AP_UNUSED_VAR(x)				(void) sizeof (x)
+#if defined (__clang__) || (defined(__GNUC__) && (__GNUC__ >= 5))
+#	define AP_UNUSED_VAR(x)		(void) (x)
+#else
+#	define AP_UNUSED_VAR(x)		(void) sizeof(x)
+#endif
 
 #define AP_VALIDATE_PTR_ARGUMENT(ptr)									\
 {																		\

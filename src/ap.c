@@ -29,6 +29,8 @@ typedef struct _AP_CTX
 	char			*log_path;
 	FILE			*log_file;
 
+	BOOL			simulate;				
+
 	char			*client_ip;
 	char			*client_command;
 } AP_CTX;
@@ -79,6 +81,7 @@ static void show_help ()
 	fprintf (stdout, "        %-2s %-25s  %s", "-c", "config", "configuration file path\n");
 	fprintf (stdout, "        %-2s %-25s  %s", "-l", "log_path|stdout|stderr", "log file path, stdout or stderr\n");
 	fprintf (stdout, "        %-2s %-25s  %s", "-e", "log_level", "log level (0-quiet, 1-error, 2-denied commands, 3-allowed commands, 4-debug, 5-trace)\n");
+	fprintf (stdout, "        %-2s %-25s  %s", "-v", "", "simulate (do not run any command)\n");
 	fprintf (stdout, "        %-2s %-25s  %s", "-v", "", "show version\n");
 	fprintf (stdout, "        %-2s %-25s  %s", "-h", "", "show help\n");
 }
@@ -151,7 +154,7 @@ static int parse_command_line (AP_CTX *ctx, int argc, char *argv[])
 
 		default:
 		{
-			if (argc > 7)
+			if (argc > 8)
 			{
 				fprintf (stdout, "Too many arguments\n");
 				show_help ();
@@ -250,6 +253,12 @@ static int parse_command_line (AP_CTX *ctx, int argc, char *argv[])
 
 						break;
 					}
+				}
+				else if (strcmp (*argv, "-s") == 0)
+				{
+					ctx->simulate = TRUE;
+
+					argv += 1;
 				}
 				else if (strcmp (*argv, "-v") == 0)
 				{
@@ -921,49 +930,42 @@ finish:
 
 static int parse_command (AP_CTX *ctx, char *line, BOOL *command_match)
 {
-	int		rc				= AP_NO_ERROR;
-	size_t	len;
-	size_t	clen;
-
+	int			rc				= AP_NO_ERROR;
+	const char	*invalid_chars	= ";{}|`()&";
+	
 	*command_match = FALSE;
 
-	len = strlen (line);
-	clen = strlen (ctx->client_command);
-
-	if (line[len - 1] == '*')
+	rc = ap_str_match (ctx->client_command, line, invalid_chars);
+	if (rc != AP_NO_ERROR)
 	{
-		if (strncmp (line, ctx->client_command, len - 1) != 0)
+		switch (rc)
 		{
-			ap_debug ("(%s) Command doesn't match\n", ctx->client_ip);
-
-			goto finish;
-		}
-
-		if (clen >= len)
-		{
-			if (ap_str_find_first_char_from_set (ctx->client_command + (char) (len - 1), ";{}|`()&") != NULL)
+			case AP_ERROR_STR_INVALID_CHARS:
 			{
-				ap_error ("(%s) Invalid characters in command '%s', not allowed when using '*' matching\n", ctx->client_ip, ctx->client_command);
+				// if invalid chars are found in the client command, then we stop checking other lines in the config file
+				ap_error ("(%s) Invalid characters '%s' in command '%s', not allowed in the substring matched by '*'\n", ctx->client_ip, invalid_chars, ctx->client_command);
 				rc = AP_ERROR_NOT_VALID;
 
 				goto finish;
+
+				break;
+			}
+
+			default:
+			{
+				ap_debug ("(%s) Command doesn't match\n", ctx->client_ip);
+
+				rc = AP_NO_ERROR;
+
+				goto finish;
+
+				break;
 			}
 		}
-
-		*command_match = TRUE;
-	}
-	else
-	{
-		if (strcmp (line, ctx->client_command) == 0)
-		{
-			*command_match = TRUE;
-			ap_debug ("(%s) Command match\n", ctx->client_ip);
-
-			goto finish;
-		}
 	}
 
-	ap_debug ("(%s) Command doesn't match\n", ctx->client_ip);
+	ap_debug ("(%s) Command matched by config line '%s'\n", ctx->client_ip, line);
+	*command_match = TRUE;
 	
 finish:
 	return rc;
@@ -984,8 +986,8 @@ static int parse_config (AP_CTX *ctx, BOOL *ip_command_match)
 	while (fgets(buf, AP_STR_SIZE, ctx->config_file) != NULL)
 	{
 		p = ap_str_trim_head_from_set (buf, " \t");
-		p = ap_str_trim_tail_from_set (p, " \t\r\n");
-		p = ap_str_shrink_spaces (p);
+		ap_str_trim_tail_from_set (p, " \t\r\n");
+		ap_str_shrink_spaces (p);
 
 		ap_debug ("(%s) Parsing line '%s'\n", ctx->client_ip, p);
 		
@@ -1039,6 +1041,17 @@ static int run_command (AP_CTX *ctx, int *exit_code)
 	int			rc			= AP_NO_ERROR;
 	int			rc_os;
 
+	if (ctx->simulate)
+	{
+		rc_os = 0;
+
+		ap_allowed ("(%s) Successfully executed command '%s', exit code '%d'\n", ctx->client_ip, ctx->client_command, rc_os);
+
+		*exit_code = rc_os;
+
+		goto finish;
+	}
+
 	rc_os = system (ctx->client_command);
 	switch (rc_os)
 	{
@@ -1046,6 +1059,8 @@ static int run_command (AP_CTX *ctx, int *exit_code)
 		{
 			ap_error ("(%s) Can not execute the shell for command '%s'\n", ctx->client_ip, ctx->client_command);
 			rc = AP_ERROR_EXECUTE_COMMAND;
+
+			goto finish;
 
 			break;
 		}
@@ -1060,6 +1075,8 @@ static int run_command (AP_CTX *ctx, int *exit_code)
 			{
 				ap_error ("(%s) Can not execute command, shell was executed, but the command inside the shell wasn't '%s'\n", ctx->client_ip, ctx->client_command);
 				rc = AP_ERROR_EXECUTE_COMMAND;
+
+				goto finish;
 			}
 			else
 			{
@@ -1072,6 +1089,7 @@ static int run_command (AP_CTX *ctx, int *exit_code)
 		}
 	}
 
+finish:
 	return rc;
 }
 
